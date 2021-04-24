@@ -43,3 +43,4 @@
 ;;
 (define-struct dir [name content])
 
+; TODO: read more dir versions

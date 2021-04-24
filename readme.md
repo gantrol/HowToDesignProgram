@@ -21,7 +21,8 @@
   - [4.5](1%20Fixed-Size%20Data/4%20Conditional/4.5.rkt)
   - [4.5-1](1%20Fixed-Size%20Data/4%20Conditional/4.5-1.rkt)
   - [4.6TraficLight](1%20Fixed-Size%20Data/4%20Conditional/4.6TraficLight.rkt)
-- ...
+- TODO: add ch5 
+- TODO: add ch6
 
 
 ## Part 2 Arbitrarily Large Data

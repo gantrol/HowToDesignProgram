@@ -142,7 +142,6 @@
 (check-expect (subst a12 'fi 3) (make-add 3 12))
 (check-expect (subst ma2 'se 2) (make-mul 2 (make-add 2 2)))
 (check-expect (subst am2 'se 2) (make-add 2 (make-mul 3 'fi)))
-; TODO: list check
 (define (subst ex x v)
   (cond
     [(number? ex) ex]
@@ -342,9 +341,9 @@
              (define plugd (subst body (first params) value))]
             (eval-function* plugd da))]))]
     (eval ex)))
-
+; TODO: 梳理整个parse和evalue过程逻辑
 ;;; 21.4 Interpreting Everything
-
+; TODO: read 21.4
 (define close-to-pi 3.14)
  
 (define (area-of-circle r)
