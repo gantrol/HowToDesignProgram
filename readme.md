@@ -1,12 +1,26 @@
 # How to Design Program
 
+
+
 ## Prologue
 
 [Prologue-How to Program](Prologue-How%20to%20Program.rkt)
 
 ## Part 1 Fixed-Size Data
 
-- [TraficLight](1%20Fixed-Size%20Data\4.6TraficLight.rkt)
+- [2_Functions](1%20Fixed-Size%20Data/2_Functions.rkt)
+- 3 How to Design Programs
+  - [3.2_Finger_Exercises_Functions](1%20Fixed-Size%20Data/3_HtDP/3.2_Finger_Exercises_Functions.rkt)
+  - [3.6_design-world-programs](1%20Fixed-Size%20Data/3_HtDP/3.6_design-world-programs.rkt)
+  - [3.7_Virtual-Pet-Worlds](1%20Fixed-Size%20Data/3_HtDP/3.7_Virtual-Pet-Worlds.rkt)
+- 4 Conditional
+  - [4.2]
+    - [Exercise49_rocket6](1%20Fixed-Size%20Data/4%20Conditional/Exercise49_rocket6.rkt)
+  - [4.3Enumerations_simple-traffic-light](1%20Fixed-Size%20Data/4%20Conditional/4.3Enumerations_simple-traffic-light.rkt)
+  - [4.4Intervals_UFO-intervals](1%20Fixed-Size%20Data/4%20Conditional/4.4Intervals_UFO-intervals.rkt)
+  - [4.5](1%20Fixed-Size%20Data/4%20Conditional/4.5.rkt)
+  - [4.5-1](1%20Fixed-Size%20Data/4%20Conditional/4.5-1.rkt)
+  - [4.6TraficLight](1%20Fixed-Size%20Data/4%20Conditional/4.6TraficLight.rkt)
 - ...
 
 
