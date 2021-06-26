@@ -18,6 +18,7 @@
 ;; Excercise 387
 ; [List of Symbol] [List of Number] -> [List of '(Symbol Number)]
 ; produces all possible ordered pairs of symbols and numbers.
+(check-expect (cross '() '()) '())
 (check-expect (cross '() '(1 2)) '())
 (check-expect (cross '(a b c) '()) '())
 (check-expect (cross '(a b c) '(1 2)) '((a 1) (a 2) (b 1) (b 2) (c 1) (c 2)))
@@ -31,7 +32,8 @@
                        (cons (list sb (first lon))
                         (sb-cross-lon sb (rest lon)))]))]
             (append (sb-cross-lon (first los) lon)
-                  (cross (rest los) lon)))]))
+                  (cross (rest los) lon)))]))   
+
 ;;; Case 2
 ; the function must process the two arguments in lockstep
 ; [List-of Number] [List-of Number] -> [List-of Number]
@@ -118,6 +120,100 @@
 
 ; [List Symbol] N -> Symbol
 ; extracts the nth symbol from l; 
-; signals an error if there is no such symbol
+; signals an error if there is no such symb ol
+(check-error (list-pick.v1 '(a b c) 3) errorLTS)
+(check-expect (list-pick.v1 '(a b c) 2) 'c)
+(check-error (list-pick.v1 '() 0) errorLTS)
+(check-expect (list-pick.v1 (cons 'a '()) 0) 'a)
+(check-error (list-pick.v1 '() 3) errorLTS)
+(define (list-pick.v1 l n)
+  (cond
+    [(and (= n 0) (empty? l))
+     (error errorLTS)]
+    [(and (> n 0) (empty? l))
+     (error errorLTS)]
+    [(and (= n 0) (cons? l))
+     (first l)]
+    [(and (> n 0) (cons? l))
+     (list-pick.v1 (rest l) (sub1 n))]))
+; Simplify version
+(define errorLTS "list too short")
+(check-error (list-pick '(a b c) 3) errorLTS)
+(check-expect (list-pick '(a b c) 2) 'c)
+(check-error (list-pick '() 0) errorLTS)
+(check-expect (list-pick (cons 'a '()) 0) 'a)
+(check-error (list-pick '() 3) errorLTS)
 (define (list-pick l n)
-  'a)
+  (cond
+    [(empty? l) (error errorLTS)]
+    [(= n 0) (first l)]
+    [(> n 0) (list-pick (rest l) (sub1 n))]))
+
+;; Exercise 390 design tree-pick
+(define-struct branch [left right])
+ 
+; A TOS is one of:
+; – Symbol
+; – (make-branch TOS TOS)
+ 
+; A Direction is one of:
+; – 'left
+; – 'right
+ 
+; A list of Directions is also called a path.
+; TOS [List Dirction] -> TOS
+(define (tree-pick tos lod)
+  (cond
+    [(empty? lod) tos]
+    [(symbol? tos) (error longerError)]
+    [(branch? tos)
+   ;[(and (symbol? tos) (empty? lod)) tos]
+   ;[(and (symbol? tos) (cons? lod)) (error longerError)]
+   ;[(and (branch? tos) (empty? lod)) tos]
+   ;[(and (branch? tos) (cons? lod))
+    (tree-pick
+     (cond
+       [(equal? (first lod) 'left)
+        (branch-left tos)]
+       [(equal? (first lod) 'right)
+        (branch-right tos)])
+     (rest lod))]))
+(define longerError "lod longer than deepth of tos")
+; l: left, r: short for right
+(define b2ll (make-branch 'b3lll 'b3llr))
+(define b2rl (make-branch 'b3rll 'b3rlr))
+(define b2lr (make-branch 'b3lrl 'b3lrr))
+(define b2rr (make-branch 'b3rrl 'b3rrr))
+(define b1l (make-branch b2ll b2lr))
+(define b1r (make-branch b2rl b2rr))
+(define b0 (make-branch b1l b1r))
+(define Lr '(right))
+(define Ll '(left))
+(define Lrl '(right left))
+(define Llr '(left right))
+(define Lrlr '(right left right))
+(check-expect (tree-pick b2ll Ll) 'b3lll)
+(check-expect (tree-pick b2rl Ll) 'b3rll)
+(check-expect (tree-pick b1l Llr) 'b3llr)
+(check-expect (tree-pick b0 Lrlr) 'b3rlr)
+(check-expect (tree-pick b1l Lr) b2lr)
+(check-expect (tree-pick b0 Lrl) b2rl)
+(check-error (tree-pick 'b3lll Lr) longerError)
+(check-error (tree-pick b2rl Lrl) longerError)
+
+;; Exercise 391.
+; List List -> List
+; replace the '() of al with bl
+(define (replace-eol-with.v1 al bl)
+  (cond
+    ;[(and (empty? al) (empty? bl)) '()]
+    [(empty? al) bl]
+    [(empty? bl) al]
+    [else
+     (cons (first al)
+           (replace-eol-with.v1 (rest al) bl))]))
+(check-expect (replace-eol-with.v1 '() '()) '())
+(check-expect (replace-eol-with.v1 '() '(1 2 3)) '(1 2 3))
+(check-expect (replace-eol-with.v1 '(a b c) '()) '(a b c))
+(check-expect (replace-eol-with.v1 '(good a morn) '(ing dot)) '(good a morn ing dot))
+
