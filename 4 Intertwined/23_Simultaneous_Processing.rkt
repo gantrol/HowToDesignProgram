@@ -18,21 +18,23 @@
 ;; Excercise 387
 ; [List of Symbol] [List of Number] -> [List of '(Symbol Number)]
 ; produces all possible ordered pairs of symbols and numbers.
+;; 应该有别的解决办法,但是我被自己之前的解法限制住了,过几周再来看看
 (check-expect (cross '() '()) '())
 (check-expect (cross '() '(1 2)) '())
 (check-expect (cross '(a b c) '()) '())
 (check-expect (cross '(a b c) '(1 2)) '((a 1) (a 2) (b 1) (b 2) (c 1) (c 2)))
 (define (cross los lon)
   (cond
-    [(empty? los) '()]
-    [else (local [(define (sb-cross-lon sb lon)
+    [(or (empty? los) (empty? lon)) '()]
+    [else
+     (local [(define (sb*lon sb lon)
                     (cond
                       [(empty? lon) '()]
                       [else
                        (cons (list sb (first lon))
-                        (sb-cross-lon sb (rest lon)))]))]
-            (append (sb-cross-lon (first los) lon)
-                  (cross (rest los) lon)))]))   
+                        (sb*lon sb (rest lon)))]))]
+            (append (sb*lon (first los) lon)
+                  (cross (rest los) lon)))]))
 
 ;;; Case 2
 ; the function must process the two arguments in lockstep
@@ -150,6 +152,7 @@
     [(> n 0) (list-pick (rest l) (sub1 n))]))
 
 ;; Exercise 390 design tree-pick
+;; Exercise 392.
 (define-struct branch [left right])
  
 ; A TOS is one of:
@@ -201,6 +204,8 @@
 (check-error (tree-pick 'b3lll Lr) longerError)
 (check-error (tree-pick b2rl Lrl) longerError)
 
+
+(define l123 '(1 2 3))
 ;; Exercise 391.
 ; List List -> List
 ; replace the '() of al with bl
@@ -213,7 +218,161 @@
      (cons (first al)
            (replace-eol-with.v1 (rest al) bl))]))
 (check-expect (replace-eol-with.v1 '() '()) '())
-(check-expect (replace-eol-with.v1 '() '(1 2 3)) '(1 2 3))
+(check-expect (replace-eol-with.v1 '() l123) l123)
 (check-expect (replace-eol-with.v1 '(a b c) '()) '(a b c))
 (check-expect (replace-eol-with.v1 '(good a morn) '(ing dot)) '(good a morn ing dot))
+
+
+;;; 23.6 Finger Exercises: Two Inputs
+;; Exercise 393.
+
+;A Son is one of: 
+; – empty 
+; – (cons Number Son)
+; 
+; Constraint If s is a Son, 
+; no number occurs twice in s
+
+; Son Son -> Son
+; merges s1 and s2 into result (base on s1)
+(define (union s1 s2)
+  (cond
+    [(and (empty? s1) (empty? s2)) '()]
+    [(empty? s2) s1]
+    [(empty? s1) s2]
+    [else
+      (union
+       (if (member? (first s2) s1)
+           s1
+           (cons (first s2) s1))
+       (rest s2))]))
+
+
+(check-expect (union '() '()) '())
+(check-expect (union '(3 2 1) '()) '(3 2 1))
+(check-expect (union '() l123) l123)
+(check-expect (union '(1 55 3) '(3 2 1)) '(2 1 55 3))
+(check-expect (union '(2 3 4 7) '(3 4 5 7 8)) '(8 5 2 3 4 7))
+
+; Son Son -> Son
+; produces the set of exactly those elements that occur in both (ordering based on s1)
+(define (intersect s1 s2)
+  (cond
+    [(or (empty? s1) (empty? s2)) '()]
+    [else
+     (local [(define i1 (first s1))
+             (define res (intersect (rest s1) s2))]
+       (if (member? i1 s2)
+           (cons i1 res)
+           res))]))
+(check-expect (intersect '() '()) '())
+(check-expect (intersect '(3 2 1) '()) '())
+(check-expect (intersect '() l123) '())
+(check-expect (intersect '(1 55 3) '(3 2 1)) '(1 3))
+(check-expect (intersect '(2 3 4 7) '(3 4 5 7 8)) '(3 4 7))
+;; Exercise 394.
+; [List Number] [List Number] -> [List Number]
+; Constraint: Input and Result is sorted in ascending order
+(define (merge l1 l2)
+  (cond
+    [(and (empty? l1) (empty? l2)) '()]
+    [(empty? l1) l2]
+    [(empty? l2) l1]
+    [else
+     (local
+       [(define i1 (first l1))
+        (define i2 (first l2))
+        (define i1>2 (> i1 i2))
+        (define smallerRemain (if i1>2 i2 i1))
+        (define l1- (if i1>2 l1 (rest l1)))
+        (define l2- (if i1>2 (rest l2) l2))]
+       (cons smallerRemain (merge l1- l2-)))]))
+(check-expect (merge '() '()) '())
+(check-expect (merge '() l123) l123)
+(check-expect (merge l123 '()) l123)
+(check-expect (merge '(4 6 9) l123) '(1 2 3 4 6 9))
+(check-expect (merge '(1 3 6) '(2 4 5)) '(1 2 3 4 5 6))
+
+
+;; Exercise 395.
+; [X] [List X] N -> [List X]
+; produces the first n items from l or all of l if it is too short.
+(define (take l n)
+  (cond
+    [(or (empty? l) (= n 0)) '()]
+    [else
+     (cons (first l) (take (rest l) (sub1 n)))]))
+(check-expect (take '() 0) '())
+(check-expect (take '() 1) '())
+(check-expect (take l123 0) '())
+(check-expect (take l123 1) '(1))
+(check-expect (take l123 3) l123)
+(check-expect (take '(4 2) 3) '(4 2))
+; [X] [List X] N -> [List X]
+; with the first n items removed or just ’() if l is too short.
+(define (drop l n)
+  (cond
+    [(empty? l) '()]
+    [(= n 0) l]
+    [else
+     (drop (rest l) (sub1 n))]))
+(check-expect (drop '() 0) '())
+(check-expect (drop '() 1) '())
+(check-expect (drop l123 0) l123)
+(check-expect (drop l123 1) '(2 3))
+(check-expect (drop l123 3) '())
+(check-expect (drop '(4 2) 3) '())
+
+;; Exercise 396.  skip because of disliking developing games.
+
+
+;; Exercise 397.
+; hpw is short for hours worked per week
+; eid is short for employee name
+(define-struct card [eid hpw])
+(define-struct employee [eid name pay-rate])
+(define-struct wage [name wage])
+; [List Employee] [List Card] -> [List Wage]
+; assumption: one time card per employee number
+(define (wages*.v3 loe loc)
+  (cond
+    [(empty? loe) '()]
+    [else
+     (local [(define e (first loe))
+             (define c (first loc))]
+       (cons (make-wage (......)
+                        (...(first loc)...)
+                        (...(rest loe)...(rest loc
+(define e1 (make-employee 1 "e1" 10))
+(define c1 (make-card 1 60))
+(define w1 (make-wage "e1" 600))
+(define e2 (make-employee 2 "e2" 20))
+(define c1 (make-employee 2 40))
+(define w2 (make-wage "e2" 800))
+(check-expect (wages*.v3 '() '()) '())
+(check-expect (wages*.v3 '() '(
+
+;;.....
+;; Exercise 402. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
