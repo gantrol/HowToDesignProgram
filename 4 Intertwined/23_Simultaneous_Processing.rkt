@@ -352,6 +352,9 @@
 (check-expect (wages*.v3 '() '()) '())
 (check-expect (wages*.v3 '() '(
 
+; TODO: find card by eid in card list
+
+
 ;;.....
 ;; Exercise 402. 
 
