@@ -309,7 +309,7 @@
 (check-expect (take l123 3) l123)
 (check-expect (take '(4 2) 3) '(4 2))
 ; [X] [List X] N -> [List X]
-; with the first n items removed or just ’() if l is too short.
+; with the first n items removed or just '() if l is too short.
 (define (drop l n)
   (cond
     [(empty? l) '()]
